@@ -16,6 +16,8 @@ type Message struct {
 	Seq int `json:"seq"`
 	// Text is the textual contents of the message.
 	Text string `json:"text"`
+	// Quick Reply
+	QuickReply QuickReply `json:"quick_reply"`
 	// Attachments is the information about the attachments which were sent
 	// with the message.
 	Attachments []Attachment `json:"attachments"`

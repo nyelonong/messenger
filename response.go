@@ -7,6 +7,7 @@ import (
 	"image"
 	"image/jpeg"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 )
@@ -39,11 +40,13 @@ func (r *Response) TextWithReplies(message string, replies []QuickReply) error {
 
 	data, err := json.Marshal(m)
 	if err != nil {
+		log.Println(err)
 		return nil
 	}
 
 	req, err := http.NewRequest("POST", SendMessageURL, bytes.NewBuffer(data))
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 

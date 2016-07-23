@@ -1,8 +1,10 @@
 package messenger
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 )
@@ -193,4 +195,37 @@ func newVerifyHandler(token string) func(w http.ResponseWriter, r *http.Request)
 		}
 		fmt.Fprintln(w, "Incorrect verify token.")
 	}
+}
+
+// Send sends a textual message
+func (m *Messenger) Send(rcpt Recipient, message string, replies []QuickReply) error {
+	sm := SendMessage{
+		Recipient: rcpt,
+		Message: MessageData{
+			Text:         message,
+			QuickReplies: replies,
+		},
+	}
+
+	data, err := json.Marshal(sm)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	req, err := http.NewRequest("POST", SendMessageURL, bytes.NewBuffer(data))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.URL.RawQuery = "access_token=" + m.token
+
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+
+	return err
 }
